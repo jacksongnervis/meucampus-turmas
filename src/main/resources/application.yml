@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: meucampus-turmas
+
+# ConexÃ£o com o PostgreSQL no Docker
+  datasource:
+    url: jdbc:postgresql://localhost:5432/meucampus_turmas
+    username: postgres
+    password: postgres
+
+# ConfiguraÃ§Ã£o do JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8082
