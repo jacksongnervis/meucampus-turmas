@@ -1,5 +1,6 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.domain;
 
+import br.edu.ifsul.sapucaia.meucampus_turmas.domain.enums.DiaSemana;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalTime;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -28,16 +30,22 @@ public class Turma {
     private String nomeDisciplina;
 
     @Column(nullable = false)
-    private String idProfessor;
+    private Long professorId;
 
     @Column(nullable = false)
-    private int semestre;
+    private String semestre;
 
     @Column(nullable = false)
     private String sala;
 
     @Column(nullable = false)
-    private LocalTime horario;
+    private List<DiaSemana> diasSemana;
+
+    @Column(nullable = false)
+    private LocalTime horarioInicial;
+
+    @Column(nullable = false)
+    private LocalTime horarioFinal;
 
     @Column(nullable = false)
     private int cargaHoraria;
