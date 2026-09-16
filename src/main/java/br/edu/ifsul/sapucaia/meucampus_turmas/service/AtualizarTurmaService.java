@@ -24,7 +24,7 @@ public class AtualizarTurmaService {
         validaIdTurmaService.validar(id);
         Turma turma = turmaRepository.findById(id).get();
 
-        if (dto.getCodigo() != null && !dto.getCodigo().isBlank()) {
+        if (!dto.getCodigo().isBlank()) {
             String novoCodigo = dto.getCodigo().trim();
             if (turmaRepository.existsByCodigoAndIdNot(novoCodigo, id)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Já existe outra turma cadastrada com o código: " + novoCodigo);
@@ -32,7 +32,7 @@ public class AtualizarTurmaService {
             turma.setCodigo(novoCodigo);
         }
 
-        if (dto.getNomeDisciplina() != null && !dto.getNomeDisciplina().isBlank()) {
+        if (!dto.getNomeDisciplina().isBlank()) {
             turma.setNomeDisciplina(dto.getNomeDisciplina().trim());
         }
 
@@ -40,11 +40,11 @@ public class AtualizarTurmaService {
             turma.setProfessorId(dto.getProfessorId());
         }
 
-        if (dto.getSemestre() != null && !dto.getSemestre().isBlank()) {
+        if (!dto.getSemestre().isBlank()) {
             turma.setSemestre(dto.getSemestre().trim());
         }
 
-        if (dto.getSala() != null && !dto.getSala().isBlank()) {
+        if (!dto.getSala().isBlank()) {
             turma.setSala(dto.getSala().trim());
         }
 
