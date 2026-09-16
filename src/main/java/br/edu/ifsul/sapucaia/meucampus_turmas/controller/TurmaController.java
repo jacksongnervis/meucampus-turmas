@@ -38,9 +38,9 @@ public class TurmaController {
         return buscarTurmasService.buscar();
     }
 
-    @GetMapping("/semestre/{semestre}")
+    @GetMapping("/semestre")
     @ResponseStatus(OK)
-    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@PathVariable String semestre) {
+    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@RequestParam String semestre) {
         return buscarTurmasPorSemestreService.buscar(semestre);
     }
 
