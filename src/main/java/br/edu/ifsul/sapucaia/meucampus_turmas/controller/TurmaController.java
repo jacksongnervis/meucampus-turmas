@@ -29,6 +29,8 @@ public class TurmaController {
 
     private final DeletarTurmaService deletarTurmaService;
 
+    private final BuscarTurmaPorIdService buscarTurmaPorIdService;
+
     @GetMapping
     @ResponseStatus(OK)
     public List<BuscarTurmaResponse> buscarTurmas(){
@@ -57,5 +59,10 @@ public class TurmaController {
     @ResponseStatus(NO_CONTENT)
     public void deletar(@PathVariable Long id) {
         deletarTurmaService.deletar(id);
+
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public BuscarTurmaResponse buscarTurma(@PathVariable Long id) {
+        return buscarTurmaPorIdService.buscar(id);
     }
 }
