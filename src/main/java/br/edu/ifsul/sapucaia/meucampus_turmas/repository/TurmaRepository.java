@@ -8,4 +8,8 @@ import java.util.List;
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
     List<Turma> findAllBySemestre(String semestre);
+
+    boolean existsByCodigo(String codigo);
+
+    boolean existsByCodigoAndIdNot(String codigo, Long id);
 }
