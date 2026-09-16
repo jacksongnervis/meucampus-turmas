@@ -1,6 +1,7 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.controller;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.controller.response.BuscarTurmaResponse;
+import br.edu.ifsul.sapucaia.meucampus_turmas.dto.AtualizarTurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.*;
@@ -37,9 +38,9 @@ public class TurmaController {
         return buscarTurmasService.buscar();
     }
 
-    @GetMapping("/semestre")
+    @GetMapping("/semestre/{semestre}")
     @ResponseStatus(OK)
-    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@RequestParam String semestre) {
+    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@PathVariable String semestre) {
         return buscarTurmasPorSemestreService.buscar(semestre);
     }
 
@@ -51,7 +52,7 @@ public class TurmaController {
 
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public TurmaResponseDTO atualizar(@PathVariable Long id, @Valid @RequestBody TurmaRequestDTO dto) {
+    public TurmaResponseDTO atualizar(@PathVariable Long id, @Valid @RequestBody AtualizarTurmaRequestDTO dto) {
         return atualizarTurmaService.atualizar(id, dto);
     }
 
