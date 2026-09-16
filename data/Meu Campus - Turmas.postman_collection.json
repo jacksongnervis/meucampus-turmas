@@ -1,0 +1,152 @@
+{
+  "info": {
+    "_postman_id": "ed420ae2-16b3-4131-867f-bf1b727dc066",
+    "name": "Meu Campus - Turmas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29566159"
+  },
+  "item": [
+    {
+      "name": "Criar Turma",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"codigo\":\"123abc\",\r\n    \"nomeDisciplina\":\"Desenvolvimento de Sistemas\",\r\n    \"professorId\":1,\r\n    \"semestre\":\"2026/2\",\r\n    \"sala\":\"223A\",\r\n    \"diasSemana\":[\"SEGUNDA\"],\r\n    \"horarioInicial\":\"19:45\",\r\n    \"horarioFinal\":\"22:15\",\r\n    \"cargaHoraria\":200,\r\n    \"numeroVagas\":30\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/turma",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar Todas Turmas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/turma",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar Turmas Por Semestre",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/turma/semestre?semestre=2026/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma",
+            "semestre"
+          ],
+          "query": [
+            {
+              "key": "semestre",
+              "value": "2026/2"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Atualizar Turma",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8082/turma/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Excluir Turma",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/turma/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar Turma",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8082/turma/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8082",
+          "path": [
+            "turma",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
