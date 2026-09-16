@@ -1,6 +1,7 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.controller;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.controller.response.BuscarTurmaResponse;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.BuscarTurmaPorIdService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.BuscarTurmasPorSemestreService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.BuscarTurmasService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ public class TurmaController {
 
     private final BuscarTurmasPorSemestreService buscarTurmasPorSemestreService;
 
+    private final BuscarTurmaPorIdService buscarTurmaPorIdService;
+
     @GetMapping
     @ResponseStatus(OK)
     public List<BuscarTurmaResponse> buscarTurmas(){
@@ -29,5 +32,11 @@ public class TurmaController {
     @ResponseStatus(OK)
     public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@PathVariable String semestre) {
         return buscarTurmasPorSemestreService.buscar(semestre);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public BuscarTurmaResponse buscarTurma(@PathVariable Long id) {
+        return buscarTurmaPorIdService.buscar(id);
     }
 }
