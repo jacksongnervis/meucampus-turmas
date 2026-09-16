@@ -37,9 +37,9 @@ public class TurmaController {
         return buscarTurmasService.buscar();
     }
 
-    @GetMapping("/semestre/{semestre}")
+    @GetMapping("/semestre")
     @ResponseStatus(OK)
-    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@PathVariable String semestre) {
+    public List<BuscarTurmaResponse> buscarTurmasPorSemestre(@RequestParam String semestre) {
         return buscarTurmasPorSemestreService.buscar(semestre);
     }
 
@@ -59,6 +59,7 @@ public class TurmaController {
     @ResponseStatus(NO_CONTENT)
     public void deletar(@PathVariable Long id) {
         deletarTurmaService.deletar(id);
+    }
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)
