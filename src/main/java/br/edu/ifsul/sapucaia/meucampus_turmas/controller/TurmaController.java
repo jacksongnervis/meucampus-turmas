@@ -59,6 +59,7 @@ public class TurmaController {
     @ResponseStatus(NO_CONTENT)
     public void deletar(@PathVariable Long id) {
         deletarTurmaService.deletar(id);
+    }
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)

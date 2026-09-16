@@ -1,8 +1,8 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.service;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.domain.Turma;
-import br.edu.ifsul.sapucaia.meucampus_turmas.exception.ResourceNotFoundException;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaIdTurmaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 public class DeletarTurmaService {
 
     private final TurmaRepository turmaRepository;
+    private final ValidaIdTurmaService validaIdTurmaService;
 
     public void deletar(Long id) {
-        Turma turma = turmaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Turma não encontrada com o ID: " + id));
-
+        validaIdTurmaService.validar(id);
+        Turma turma = turmaRepository.findById(id).get();
         turmaRepository.delete(turma);
     }
 }
