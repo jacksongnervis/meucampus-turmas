@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,6 +55,24 @@ public class ApiExceptionHandler {
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         body.put("message", message);
+        body.put("path", request.getServletPath());
+
+        return new ResponseEntity<>(body, status);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                            HttpServletRequest request) {
+        if (ex.getMostSpecificCause() instanceof ResponseStatusException rse) {
+            return handleResponseStatusException(rse, request);
+        }
+
+        HttpStatus status = BAD_REQUEST;
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDate.now());
+        body.put("status", status.value());
+        body.put("error", status.getReasonPhrase());
+        body.put("message", "Formato de requisição inválido.");
         body.put("path", request.getServletPath());
 
         return new ResponseEntity<>(body, status);
