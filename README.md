@@ -1,4 +1,4 @@
-# MeuCampus - Serviço de Turmas (Grupo 2)
+# MeuCampus - Serviço de Turmas
 
 Microsserviço responsável pela oferta de turmas acadêmicas do sistema integrado **MeuCampus**, desenvolvido para a disciplina de **Desenvolvimento de Sistemas Computacionais** no **Instituto Federal Sul-rio-grandense (IFSUL) - Campus Sapucaia do Sul**.
 
@@ -32,7 +32,7 @@ Para facilitar a execução dos testes pela professora, o projeto já inclui uma
 
 ---
 
-## 2. Anotações do Jackson uUilizadas
+## 2. Anotações do Jackson Utilizadas
 
 Foram aplicadas anotações da biblioteca **Jackson** que alteram diretamente a representação e o tratamento dos dados em JSON:
 
