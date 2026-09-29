@@ -1,6 +1,6 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.service;
 
-import br.edu.ifsul.sapucaia.meucampus_turmas.controller.response.BuscarTurmaResponse;
+import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,11 @@ public class BuscarTurmasService {
 
     private final TurmaRepository turmaRepository;
 
-
-    public List<BuscarTurmaResponse> buscar() {
+    public List<TurmaResponseDTO> buscar() {
 
         return turmaRepository.findAll()
                 .stream()
-                .map(TurmaMapper::toResponse)
+                .map(TurmaMapper::toResponseDTO)
                 .toList();
     }
 }

@@ -1,6 +1,5 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.mapper;
 
-import br.edu.ifsul.sapucaia.meucampus_turmas.controller.response.BuscarTurmaResponse;
 import br.edu.ifsul.sapucaia.meucampus_turmas.domain.Turma;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
@@ -43,23 +42,6 @@ public class TurmaMapper {
                 .horarioFinal(turma.getHorarioFinal())
                 .cargaHoraria(turma.getCargaHoraria())
                 .numeroVagas(turma.getNumeroVagas())
-                .build();
-    }
-
-    public static BuscarTurmaResponse toResponse(Turma turma) {
-
-        return BuscarTurmaResponse
-                .builder()
-                .codigo(turma.getCodigo())
-                .cargaHoraria(turma.getCargaHoraria())
-                .diasSemana(turma.getDiasSemana())
-                .horarioFinal(turma.getHorarioFinal())
-                .horarioInicial(turma.getHorarioInicial())
-                .numeroVagas(turma.getNumeroVagas())
-                .professorId(turma.getProfessorId())
-                .semestre(turma.getSemestre())
-                .sala(turma.getSala())
-                .nomeDisciplina(turma.getNomeDisciplina())
                 .build();
     }
 }

@@ -21,10 +21,9 @@ import java.util.List;
 @AllArgsConstructor
 public class AtualizarTurmaRequestDTO {
 
-    private static final String CAMPO_OBRIGATORIO="é obrigatório";
     private static final String CAMPO_POSITIVO="deve ser maior que zero";
 
-    @Size(min = 2, max = 20, message = "deve ter entre 2 e 20 caracteres")
+    @Size(min = 2, max = 50, message = "deve ter entre 2 e 50 caracteres")
     private String codigo;
 
     @Size(min = 2, max = 100, message = "deve ter entre 2 e 100 caracteres")

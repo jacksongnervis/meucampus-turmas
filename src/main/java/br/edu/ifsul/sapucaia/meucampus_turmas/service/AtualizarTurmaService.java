@@ -3,16 +3,13 @@ package br.edu.ifsul.sapucaia.meucampus_turmas.service;
 import br.edu.ifsul.sapucaia.meucampus_turmas.domain.Turma;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.AtualizarTurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
-import br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaIdTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 
@@ -41,7 +38,7 @@ public class AtualizarTurmaService {
 
     private void atualizaCamposInformados(AtualizarTurmaRequestDTO dto, Turma turma) {
 
-        if (!dto.getCodigo().isBlank()) {
+        if (dto.getCodigo() != null && !dto.getCodigo().isBlank()) {
 
             String novoCodigo = dto.getCodigo().trim();
 
@@ -49,7 +46,7 @@ public class AtualizarTurmaService {
             turma.setCodigo(novoCodigo);
         }
 
-        if (!dto.getNomeDisciplina().isBlank()) {
+        if (dto.getNomeDisciplina() != null && !dto.getNomeDisciplina().isBlank()) {
             turma.setNomeDisciplina(dto.getNomeDisciplina().trim());
         }
 
@@ -57,11 +54,11 @@ public class AtualizarTurmaService {
             turma.setProfessorId(dto.getProfessorId());
         }
 
-        if (!dto.getSemestre().isBlank()) {
+        if (dto.getSemestre() != null && !dto.getSemestre().isBlank()) {
             turma.setSemestre(dto.getSemestre().trim());
         }
 
-        if (!dto.getSala().isBlank()) {
+        if (dto.getSala() != null && !dto.getSala().isBlank()) {
             turma.setSala(dto.getSala().trim());
         }
 
