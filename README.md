@@ -66,7 +66,7 @@ Para facilitar a execução dos testes pela professora, o projeto já inclui uma
 Foram aplicadas anotações da biblioteca **Jackson** que alteram diretamente a representação e o tratamento dos dados em JSON:
 
 1. **`@JsonFormat(pattern = "HH:mm")`**
-   - **Onde foi aplicada:** Nos campos `horarioInicial` e `horarioFinal` em `TurmaRequestDTO`, `TurmaResponseDTO`, `AtualizarTurmaRequestDTO` e `BuscarTurmaResponse`.
+   - **Onde foi aplicada:** Nos campos `horarioInicial` e `horarioFinal` em `TurmaRequestDTO`, `TurmaResponseDTO` e `AtualizarTurmaRequestDTO`.
    - **Justificativa:** Por padrão, o módulo JSR-310 do Jackson serializa objetos `java.time.LocalTime` como arrays de números inteiros (ex: `[19, 45]`). A anotação `@JsonFormat(pattern = "HH:mm")` instrui o serializador e o desserializador a manipular os horários no formato String de 24 horas (`"19:45"`), garantindo legibilidade e conformidade com o padrão JSON da API.
 
 2. **`@JsonProperty("professorId")`**
