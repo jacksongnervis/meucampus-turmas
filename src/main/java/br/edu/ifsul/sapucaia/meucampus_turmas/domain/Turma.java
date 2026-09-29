@@ -1,10 +1,7 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.domain;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.domain.enums.DiaSemana;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalTime;
@@ -38,7 +35,10 @@ public class Turma {
     @Column(nullable = false)
     private String sala;
 
-    @Column(nullable = false)
+    @ElementCollection(targetClass = DiaSemana.class, fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "turma_dias_semana", joinColumns = @JoinColumn(name = "turma_id"))
+    @Column(name = "dia_semana", nullable = false)
     private List<DiaSemana> diasSemana;
 
     @Column(nullable = false)
