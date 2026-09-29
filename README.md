@@ -30,6 +30,35 @@ Microsserviço responsável pela oferta de turmas acadêmicas do sistema integra
 Para facilitar a execução dos testes pela professora, o projeto já inclui uma collection completa e pronta para importação no arquivo:
 📁 `data/Meu Campus - Turmas.postman_collection.json`
 
+### Para consultas no banco via terminal:
+1. Se conecte ao container do PostgreSQL:
+   ```bash
+   docker exec -it <nome-do-container> psql -U postgres -d meucampus_turmas
+   ```
+
+2. Selecione o banco de dados:
+   ```sql
+   \c meucampus_turmas
+   ```
+   
+3. Liste todas as tabelas:
+   ```sql
+   \dt
+   ```
+   
+4. Liste todas as colunas de uma tabela:
+   ```sql
+   \d nome-da-tabela
+   ```
+
+5. Realize as consultas.
+
+
+6. Sair do terminal:
+   ```sql
+   \q
+   ```
+
 ---
 
 ## 2. Anotações do Jackson Utilizadas
@@ -234,7 +263,7 @@ Recurso base: **`/turma`**
   "timestamp": "2026-09-22",
   "status": 400,
   "error": "Bad Request",
-  "message": "Campo codigo O código da turma é obrigatório",
+  "message": "Campo codigo é obrigatório",
   "path": "/turma"
 }
 ```

@@ -1,7 +1,6 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.service;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.controller.response.BuscarTurmaResponse;
-import br.edu.ifsul.sapucaia.meucampus_turmas.domain.Turma;
 import br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +16,9 @@ public class BuscarTurmasPorSemestreService {
 
     public List<BuscarTurmaResponse> buscar(String semestre) {
 
-        List<Turma> turmas = turmaRepository.findAllBySemestre(semestre);
-
-        return turmas.stream()
-            .map(TurmaMapper::toResponse)
-            .toList();
+        return turmaRepository.findAllBySemestre(semestre)
+                .stream()
+                .map(TurmaMapper::toResponse)
+                .toList();
     }
 }

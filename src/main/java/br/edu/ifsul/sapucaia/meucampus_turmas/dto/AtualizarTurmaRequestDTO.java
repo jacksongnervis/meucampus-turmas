@@ -21,13 +21,16 @@ import java.util.List;
 @AllArgsConstructor
 public class AtualizarTurmaRequestDTO {
 
-    @Size(min = 2, max = 20, message = "O código da turma deve ter entre 2 e 20 caracteres")
+    private static final String CAMPO_OBRIGATORIO="é obrigatório";
+    private static final String CAMPO_POSITIVO="deve ser maior que zero";
+
+    @Size(min = 2, max = 20, message = "deve ter entre 2 e 20 caracteres")
     private String codigo;
 
-    @Size(min = 2, max = 100, message = "O nome da disciplina deve ter entre 2 e 100 caracteres")
+    @Size(min = 2, max = 100, message = "deve ter entre 2 e 100 caracteres")
     private String nomeDisciplina;
 
-    @Positive(message = "O ID do professor deve ser um número positivo")
+    @Positive(message = CAMPO_POSITIVO)
     @JsonProperty("professorId")
     private Long professorId;
 
@@ -43,9 +46,9 @@ public class AtualizarTurmaRequestDTO {
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horarioFinal;
 
-    @Positive(message = "A carga horária deve ser maior que zero")
+    @Positive(message = CAMPO_POSITIVO)
     private Integer cargaHoraria;
 
-    @Positive(message = "O número de vagas deve ser maior que zero")
+    @Positive(message = CAMPO_POSITIVO)
     private Integer numeroVagas;
 }

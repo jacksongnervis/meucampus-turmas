@@ -24,41 +24,44 @@ import java.util.List;
 @AllArgsConstructor
 public class TurmaRequestDTO {
 
-    @NotBlank(message = "O código da turma é obrigatório")
-    @Size(min = 2, max = 50, message = "O código da turma deve ter entre 2 e 50 caracteres")
+    private static final String CAMPO_OBRIGATORIO="é obrigatório";
+    private static final String CAMPO_POSITIVO="deve ser maior que zero";
+
+    @NotBlank(message = CAMPO_OBRIGATORIO)
+    @Size(min = 2, max = 50, message = "deve ter entre 2 e 50 caracteres")
     private String codigo;
 
-    @NotBlank(message = "O nome da disciplina é obrigatório")
-    @Size(min = 2, max = 100, message = "O nome da disciplina deve ter entre 2 e 100 caracteres")
+    @NotBlank(message = CAMPO_OBRIGATORIO)
+    @Size(min = 2, max = 100, message = "deve ter entre 2 e 100 caracteres")
     private String nomeDisciplina;
 
-    @NotNull(message = "O ID do professor é obrigatório")
-    @Positive(message = "O ID do professor deve ser um número positivo")
+    @NotNull(message = CAMPO_OBRIGATORIO)
+    @Positive(message = CAMPO_POSITIVO)
     @JsonProperty("professorId")
     private Long professorId;
 
-    @NotBlank(message = "O semestre é obrigatório")
+    @NotBlank(message = CAMPO_OBRIGATORIO)
     private String semestre;
 
-    @NotBlank(message = "A sala é obrigatória")
+    @NotBlank(message = CAMPO_OBRIGATORIO)
     private String sala;
 
-    @NotEmpty(message = "Ao menos um dia da semana deve ser informado")
+    @NotEmpty(message = "deve ser informado")
     private List<DiaSemana> diasSemana;
 
-    @NotNull(message = "O horário inicial é obrigatório")
+    @NotNull(message = CAMPO_OBRIGATORIO)
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horarioInicial;
 
-    @NotNull(message = "O horário final é obrigatório")
+    @NotNull(message = CAMPO_OBRIGATORIO)
     @JsonFormat(pattern = "HH:mm")
     private LocalTime horarioFinal;
 
-    @NotNull(message = "A carga horária é obrigatória")
-    @Positive(message = "A carga horária deve ser maior que zero")
+    @NotNull(message = CAMPO_OBRIGATORIO)
+    @Positive(message = CAMPO_POSITIVO)
     private Integer cargaHoraria;
 
-    @NotNull(message = "O número de vagas é obrigatório")
-    @Positive(message = "O número de vagas deve ser maior que zero")
+    @NotNull(message = CAMPO_OBRIGATORIO)
+    @Positive(message = CAMPO_POSITIVO)
     private Integer numeroVagas;
 }

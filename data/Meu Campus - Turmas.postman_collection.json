@@ -86,7 +86,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \r\n}",
+          "raw": "{\r\n    \"codigo\":\"123abc\",\r\n    \"nomeDisciplina\":\"Desenvolvimento de Sistemas\",\r\n    \"professorId\":1,\r\n    \"semestre\":\"2026/2\",\r\n    \"sala\":\"223A\",\r\n    \"diasSemana\":[\"TERÇA\"],\r\n    \"horarioInicial\":\"19:45\",\r\n    \"horarioFinal\":\"22:15\",\r\n    \"cargaHoraria\":200,\r\n    \"numeroVagas\":30\r\n}",
           "options": {
             "raw": {
               "language": "json"

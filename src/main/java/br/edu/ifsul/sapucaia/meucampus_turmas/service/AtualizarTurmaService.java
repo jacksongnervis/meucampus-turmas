@@ -5,7 +5,10 @@ import br.edu.ifsul.sapucaia.meucampus_turmas.dto.AtualizarTurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaIdTurmaService;
+import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,22 +16,36 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 
+import static br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper.toResponseDTO;
+
 @Service
 @RequiredArgsConstructor
 public class AtualizarTurmaService {
 
     private final TurmaRepository turmaRepository;
     private final ValidaIdTurmaService validaIdTurmaService;
+    private final ValidaCodigoTurmaService validaCodigoTurmaService;
+    private final ValidaHorariosTurmaValidator validaHorariosTurma;
 
+    @Transactional
     public TurmaResponseDTO atualizar(Long id, AtualizarTurmaRequestDTO dto) {
+
         validaIdTurmaService.validar(id);
+
         Turma turma = turmaRepository.findById(id).get();
 
+        atualizaCamposInformados(dto, turma);
+
+        return toResponseDTO(turma);
+    }
+
+    private void atualizaCamposInformados(AtualizarTurmaRequestDTO dto, Turma turma) {
+
         if (!dto.getCodigo().isBlank()) {
+
             String novoCodigo = dto.getCodigo().trim();
-            if (turmaRepository.existsByCodigoAndIdNot(novoCodigo, id)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Já existe outra turma cadastrada com o código: " + novoCodigo);
-            }
+
+            validaCodigoTurmaService.validaSeExisteForaDoId(novoCodigo, turma.getId());
             turma.setCodigo(novoCodigo);
         }
 
@@ -55,9 +72,7 @@ public class AtualizarTurmaService {
         LocalTime novoInicio = dto.getHorarioInicial() != null ? dto.getHorarioInicial() : turma.getHorarioInicial();
         LocalTime novoFim = dto.getHorarioFinal() != null ? dto.getHorarioFinal() : turma.getHorarioFinal();
 
-        if (novoFim.isBefore(novoInicio) || novoFim.equals(novoInicio)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O horário final deve ser posterior ao horário inicial");
-        }
+        validaHorariosTurma.validarHorarioFinalPosteriorHorarioInicial(novoInicio, novoFim);
 
         if (dto.getHorarioInicial() != null) {
             turma.setHorarioInicial(dto.getHorarioInicial());
@@ -74,9 +89,5 @@ public class AtualizarTurmaService {
         if (dto.getNumeroVagas() != null) {
             turma.setNumeroVagas(dto.getNumeroVagas());
         }
-
-        Turma atualizada = turmaRepository.save(turma);
-
-        return TurmaMapper.toResponseDTO(atualizada);
     }
 }
