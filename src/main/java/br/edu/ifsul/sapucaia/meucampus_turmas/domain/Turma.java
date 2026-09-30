@@ -35,10 +35,7 @@ public class Turma {
     @Column(nullable = false)
     private String sala;
 
-    @ElementCollection(targetClass = DiaSemana.class, fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "turma_dias_semana", joinColumns = @JoinColumn(name = "turma_id"))
-    @Column(name = "dia_semana", nullable = false)
+    @Column(nullable = false)
     private List<DiaSemana> diasSemana;
 
     @Column(nullable = false)

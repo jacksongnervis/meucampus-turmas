@@ -8,9 +8,7 @@ import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurm
 import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import static br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper.toEntity;
 import static br.edu.ifsul.sapucaia.meucampus_turmas.mapper.TurmaMapper.toResponseDTO;
