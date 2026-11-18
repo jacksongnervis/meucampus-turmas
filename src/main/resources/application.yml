@@ -16,3 +16,13 @@ spring:
 
 server:
   port: 8082
+
+# Endereços dos outros serviços do MeuCampus e tempo limite das chamadas (em ms)
+servicos:
+  cadastro:
+    url: http://localhost:8081
+  matriculas:
+    url: http://localhost:8083
+  timeout:
+    conexao-ms: 2000
+    leitura-ms: 3000
