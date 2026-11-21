@@ -5,6 +5,7 @@ import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurmaService;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaConflitoHorarioTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaProfessorService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
 import jakarta.transaction.Transactional;
@@ -22,15 +23,20 @@ public class CadastrarTurmaService {
     private final ValidaCodigoTurmaService validaCodigoTurmaService;
     private final ValidaHorariosTurmaValidator validaHorarioTurmaService;
     private final ValidaProfessorService validaProfessorService;
+    private final ValidaConflitoHorarioTurmaService validaConflitoHorarioTurmaService;
 
     @Transactional
     public TurmaResponseDTO cadastrar(TurmaRequestDTO dto) {
+
+        validaProfessorService.validar(dto.getProfessorId());
 
         validaCodigoTurmaService.validaSeExiste(dto.getCodigo().trim());
 
         validaHorarioTurmaService.validarHorarioFinalPosteriorHorarioInicial(dto.getHorarioInicial(), dto.getHorarioFinal());
 
-        validaProfessorService.validar(dto.getProfessorId());
+        Long idIgnorado = 0L;
+
+        validaConflitoHorarioTurmaService.validarConflitoHorario(dto.getSala().trim().toLowerCase(), dto.getSemestre(), dto.getDiasSemana(), dto.getHorarioInicial(), dto.getHorarioFinal(), idIgnorado);
 
         Turma turma = toEntity(dto);
         Turma salva = turmaRepository.save(turma);

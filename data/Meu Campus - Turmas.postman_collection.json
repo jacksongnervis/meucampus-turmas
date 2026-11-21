@@ -2,151 +2,537 @@
   "info": {
     "_postman_id": "ed420ae2-16b3-4131-867f-bf1b727dc066",
     "name": "Meu Campus - Turmas",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "29566159"
+    "description": "Serviço de Turmas (porta 8082). Requer Cadastro (8081) e Matrículas (8083) para as validações entre serviços.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Criar Turma",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"codigo\":\"123abc\",\r\n    \"nomeDisciplina\":\"Desenvolvimento de Sistemas\",\r\n    \"professorId\":1,\r\n    \"semestre\":\"2026/2\",\r\n    \"sala\":\"223A\",\r\n    \"diasSemana\":[\"SEGUNDA\"],\r\n    \"horarioInicial\":\"19:45\",\r\n    \"horarioFinal\":\"22:15\",\r\n    \"cargaHoraria\":200,\r\n    \"numeroVagas\":30\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+      "name": "Listagem e filtros",
+      "item": [
+        {
+          "name": "Listar turmas (paginado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "description": "Padrão: page=0, size=10, sort=nomeDisciplina. Resposta { content: [...], page: {...} }."
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:8082/turma",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Buscar Todas Turmas",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8082/turma",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Buscar Turmas Por Semestre",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8082/turma/semestre?semestre=2026/2",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma",
-            "semestre"
-          ],
-          "query": [
-            {
-              "key": "semestre",
-              "value": "2026/2"
+        {
+          "name": "Listar com paginação e ordenação",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?page=0&size=2&sort=codigo,desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "2"
+                },
+                {
+                  "key": "sort",
+                  "value": "codigo,desc"
+                }
+              ]
             }
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Atualizar Turma",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n    \"codigo\":\"123abc\",\r\n    \"nomeDisciplina\":\"Desenvolvimento de Sistemas\",\r\n    \"professorId\":1,\r\n    \"semestre\":\"2026/2\",\r\n    \"sala\":\"223A\",\r\n    \"diasSemana\":[\"TERÇA\"],\r\n    \"horarioInicial\":\"19:45\",\r\n    \"horarioFinal\":\"22:15\",\r\n    \"cargaHoraria\":200,\r\n    \"numeroVagas\":30\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:8082/turma/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma",
-            "1"
-          ]
+        {
+          "name": "Filtrar por professorId (contrato com Cadastro)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?professorId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "professorId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Usado pelo serviço de Cadastro para impedir a remoção de professor responsável por turma."
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar por semestre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?semestre=2026/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "semestre",
+                  "value": "2026/2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar por semestre e professorId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?semestre=2026/2&professorId=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "semestre",
+                  "value": "2026/2"
+                },
+                {
+                  "key": "professorId",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "Excluir Turma",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8082/turma/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma",
-            "1"
-          ]
+      "name": "CRUD e consulta composta",
+      "item": [
+        {
+          "name": "Buscar turma por id (contrato com Matrículas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "1"
+              ]
+            },
+            "description": "Usado pelo serviço de Matrículas para conferir se a turma existe e consultar numeroVagas."
+          },
+          "response": []
+        },
+        {
+          "name": "Detalhes da turma com professor (consulta composta)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1/detalhes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "1",
+                "detalhes"
+              ]
+            },
+            "description": "Busca nome e e-mail do professor no serviço de Cadastro. 503 se o Cadastro estiver fora do ar."
+          },
+          "response": []
+        },
+        {
+          "name": "Cadastrar turma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"POO01\",\n    \"nomeDisciplina\": \"Programação Orientada a Objetos\",\n    \"professorId\": 1,\n    \"semestre\": \"2026/2\",\n    \"sala\": \"Lab 05\",\n    \"diasSemana\": [\n        \"SEXTA\"\n    ],\n    \"horarioInicial\": \"19:00\",\n    \"horarioFinal\": \"22:15\",\n    \"cargaHoraria\": 60,\n    \"numeroVagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "201. Confere o professorId no Cadastro. Executar duas vezes devolve 400 (código duplicado)."
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar turma (parcial)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "1"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sala\": \"Lab 03\",\n    \"numeroVagas\": 40\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Atualiza só os campos enviados. 200."
+          },
+          "response": []
+        },
+        {
+          "name": "Remover turma",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "3"
+              ]
+            },
+            "description": "204. Consulta o serviço de Matrículas: 409 se houver matrícula ATIVA, 503 se Matrículas estiver fora do ar."
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "Buscar Turma",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8082/turma/1",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8082",
-          "path": [
-            "turma",
-            "1"
-          ]
+      "name": "Casos de erro",
+      "item": [
+        {
+          "name": "400 - professorId inexistente no Cadastro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"ERR01\",\n    \"nomeDisciplina\": \"Programação Orientada a Objetos\",\n    \"professorId\": 999,\n    \"semestre\": \"2026/2\",\n    \"sala\": \"Lab 09\",\n    \"diasSemana\": [\n        \"SEXTA\"\n    ],\n    \"horarioInicial\": \"19:00\",\n    \"horarioFinal\": \"22:15\",\n    \"cargaHoraria\": 60,\n    \"numeroVagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "400 - Bean Validation (campo obrigatório)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nomeDisciplina\": \"Programação Orientada a Objetos\",\n    \"professorId\": 1,\n    \"semestre\": \"2026/2\",\n    \"sala\": \"Lab 05\",\n    \"diasSemana\": [\n        \"SEXTA\"\n    ],\n    \"horarioInicial\": \"19:00\",\n    \"horarioFinal\": \"22:15\",\n    \"cargaHoraria\": 60,\n    \"numeroVagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "400 - horário final antes do inicial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"ERR02\",\n    \"nomeDisciplina\": \"Programação Orientada a Objetos\",\n    \"professorId\": 1,\n    \"semestre\": \"2026/2\",\n    \"sala\": \"Lab 09\",\n    \"diasSemana\": [\n        \"SEXTA\"\n    ],\n    \"horarioInicial\": \"22:00\",\n    \"horarioFinal\": \"19:00\",\n    \"cargaHoraria\": 60,\n    \"numeroVagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "400 - parâmetro com tipo inválido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?professorId=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "professorId",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "400 - ordenação por campo inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas?sort=xyz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "xyz"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "404 - turma inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "409 - conflito de horário no cadastro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"ERR03\",\n    \"nomeDisciplina\": \"Programação Orientada a Objetos\",\n    \"professorId\": 1,\n    \"semestre\": \"2026/2\",\n    \"sala\": \"Lab 03\",\n    \"diasSemana\": [\n        \"SEGUNDA\"\n    ],\n    \"horarioInicial\": \"20:00\",\n    \"horarioFinal\": \"21:00\",\n    \"cargaHoraria\": 60,\n    \"numeroVagas\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Conflita com a DSC01 da carga inicial (lab 03, SEGUNDA/QUARTA, 19:00-22:15)."
+          },
+          "response": []
+        },
+        {
+          "name": "409 - conflito de horário na atualização",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "2"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sala\": \"Lab 03\",\n    \"diasSemana\": [\n        \"SEGUNDA\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Move a BD01 (19:00-22:15) para o lab 03 na SEGUNDA, onde já está a DSC01."
+          },
+          "response": []
+        },
+        {
+          "name": "409 / 503 - remover turma com matrícula ativa",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "1"
+              ]
+            },
+            "description": "409 se o serviço de Matrículas tiver matrícula ATIVA para a turma; 503 se Matrículas estiver fora do ar."
+          },
+          "response": []
+        },
+        {
+          "name": "503 - Cadastro fora do ar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1/detalhes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "turmas",
+                "1",
+                "detalhes"
+              ]
+            },
+            "description": "Desligue o serviço de Cadastro (8081) antes de executar. Para simular timeout: nc -l 8081."
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8082"
     }
   ]
 }
