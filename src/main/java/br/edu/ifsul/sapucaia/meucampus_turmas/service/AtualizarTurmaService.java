@@ -6,6 +6,7 @@ import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaIdTurmaService;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaProfessorService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class AtualizarTurmaService {
     private final ValidaIdTurmaService validaIdTurmaService;
     private final ValidaCodigoTurmaService validaCodigoTurmaService;
     private final ValidaHorariosTurmaValidator validaHorariosTurma;
+    private final ValidaProfessorService validaProfessorService;
 
     @Transactional
     public TurmaResponseDTO atualizar(Long id, AtualizarTurmaRequestDTO dto) {
@@ -50,10 +52,6 @@ public class AtualizarTurmaService {
             turma.setNomeDisciplina(dto.getNomeDisciplina().trim());
         }
 
-        if (dto.getProfessorId() != null) {
-            turma.setProfessorId(dto.getProfessorId());
-        }
-
         if (dto.getSemestre() != null && !dto.getSemestre().isBlank()) {
             turma.setSemestre(dto.getSemestre().trim());
         }
@@ -70,6 +68,11 @@ public class AtualizarTurmaService {
         LocalTime novoFim = dto.getHorarioFinal() != null ? dto.getHorarioFinal() : turma.getHorarioFinal();
 
         validaHorariosTurma.validarHorarioFinalPosteriorHorarioInicial(novoInicio, novoFim);
+
+        if (dto.getProfessorId() != null) {
+            validaProfessorService.validar(dto.getProfessorId());
+            turma.setProfessorId(dto.getProfessorId());
+        }
 
         if (dto.getHorarioInicial() != null) {
             turma.setHorarioInicial(dto.getHorarioInicial());
