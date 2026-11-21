@@ -26,9 +26,14 @@ Microsserviço responsável pela oferta de turmas acadêmicas do sistema integra
    ./mvnw spring-boot:run
    ```
 
-### Collection do Postman
-Para facilitar a execução dos testes pela professora, o projeto já inclui uma collection completa e pronta para importação no arquivo:
-📁 `data/Meu Campus - Turmas.postman_collection.json`
+### Collection do Postman e Documentação OpenAPI (Swagger)
+- **Swagger UI:** Com o serviço em execução, a documentação interativa OpenAPI está disponível em:
+  `http://localhost:8082/swagger-ui/index.html` (especificação JSON em `/v3/api-docs`).
+- **Collection do Postman:** Para facilitar a execução dos testes pela professora, o projeto também inclui uma collection no arquivo:
+  📁 `data/Meu Campus - Turmas.postman_collection.json`
+
+### Carga Inicial de Dados (`CargaInicial`)
+Ao inicializar a aplicação, a classe [`CargaInicial`](src/main/java/br/edu/ifsul/sapucaia/meucampus_turmas/config/CargaInicial.java) verifica se a tabela `turma` está vazia (`count() == 0`). Caso esteja, são cadastradas 3 turmas de exemplo (`DSC01`, `BD01` e `ES01`) vinculadas aos `professorId` `1` e `2`, evitando duplicação a cada reinício.
 
 ### Para consultas no banco via terminal:
 1. Se conecte ao container do PostgreSQL:
@@ -61,7 +66,50 @@ Para facilitar a execução dos testes pela professora, o projeto já inclui uma
 
 ---
 
-## 2. Anotações do Jackson Utilizadas
+## 2. Banco de Dados, Entidade e Integração com Serviços
+
+### Entidade e Tabela (`turma`)
+O serviço utiliza banco relacional **PostgreSQL 16** (executado via Docker Compose na porta `5432`, database `meucampus_turmas`, usuário/senha `postgres`), acessado com Spring Data JPA.
+
+A entidade principal [`Turma`](src/main/java/br/edu/ifsul/sapucaia/meucampus_turmas/domain/Turma.java) é mapeada para a tabela **`turma`** com as seguintes colunas:
+
+| Coluna | Tipo Java / Banco | Restrições | Descrição |
+| :--- | :--- | :--- | :--- |
+| `id` | `Long` / `bigint` | PK, auto-incremento (`IDENTITY`) | Identificador único da turma |
+| `codigo` | `String` / `varchar` | `NOT NULL`, `UNIQUE` | Código identificador da turma (ex: `DSC01`) |
+| `nome_disciplina` | `String` / `varchar` | `NOT NULL` | Nome da disciplina |
+| `professor_id` | `Long` / `bigint` | `NOT NULL` | ID do professor responsável (referência ao serviço de Cadastro; sem `@ManyToOne`) |
+| `semestre` | `String` / `varchar` | `NOT NULL` | Semestre letivo (ex: `2026/2`) |
+| `sala` | `String` / `varchar` | `NOT NULL` | Sala ou laboratório |
+| `dias_semana` | `List<DiaSemana>` / array | `NOT NULL` | Dias da semana da aula |
+| `horario_inicial` | `LocalTime` / `time` | `NOT NULL` | Horário de início da aula |
+| `horario_final` | `LocalTime` / `time` | `NOT NULL` | Horário de término da aula |
+| `carga_horaria` | `int` / `integer` | `NOT NULL` | Carga horária total da turma |
+| `numero_vagas` | `int` / `integer` | `NOT NULL` | Quantidade máxima de vagas |
+
+### Propriedades de Endereços e Timeouts (`application.yml`)
+Os endereços dos demais serviços e os limites de tempo das chamadas HTTP são configurados em [`application.yml`](src/main/resources/application.yml) e utilizados pelo [`RestClientConfig`](src/main/java/br/edu/ifsul/sapucaia/meucampus_turmas/config/RestClientConfig.java):
+
+```yaml
+servicos:
+  cadastro:
+    url: http://localhost:8081
+  matriculas:
+    url: http://localhost:8083
+  timeout:
+    conexao-ms: 2000
+    leitura-ms: 3000
+```
+
+### Endpoints Consumidos do Serviço de Cadastro (Grupo 1)
+A comunicação com o serviço de **Cadastro** (porta `8081`) é feita pela classe [`CadastroClient`](src/main/java/br/edu/ifsul/sapucaia/meucampus_turmas/client/CadastroClient.java) usando `RestClient`:
+- **`GET /professores/{id}`**:
+  - **Na criação e atualização (`POST /turmas` e `PUT /turmas/{id}`):** valida se o `professorId` informado existe no Cadastro. Caso o Cadastro responda `404 Not Found`, a operação é recusada em Turmas com **`400 Bad Request`**.
+  - **Na consulta composta (`GET /turmas/{id}/detalhes`):** busca em tempo de execução o `nome` e o `email` do professor responsável para compor a resposta sem gravar dados do professor no banco local.
+
+---
+
+## 3. Anotações do Jackson Utilizadas
 
 Foram aplicadas anotações da biblioteca **Jackson** que alteram diretamente a representação e o tratamento dos dados em JSON:
 
@@ -81,30 +129,38 @@ Foram aplicadas anotações da biblioteca **Jackson** que alteram diretamente a 
    - **Onde foi aplicada:** No campo `id` em `TurmaResponseDTO`.
    - **Justificativa:** Garante que o identificador numérico gerado pelo banco seja retornado ao cliente, mas impede que clientes forcem um `id` arbitrário no corpo de requisições de criação.
 
+5. **`@JsonUnwrapped`**
+   - **Onde foi aplicada:** No campo `turma` em `TurmaDetalhesResponseDTO`.
+   - **Justificativa:** Faz com que os atributos da turma apareçam no mesmo nível JSON dos campos `professorNome` e `professorEmail` na resposta de `GET /turmas/{id}/detalhes`.
+
 ---
 
-## 3. Regras de Negócio
+## 4. Regras de Negócio
 
 1. **Unicidade do Código da Turma:**
    - Não é permitido cadastrar duas turmas com o mesmo código. Ao cadastrar (`POST`), verifica-se se o código já existe. Ao atualizar (`PUT`), verifica-se se o novo código já não pertence a outra turma diferente da atual.
-2. **Consistência Temporal dos Horários:**
+2. **Validação de Existência do Professor (Integração Cadastro):**
+   - Ao cadastrar (`POST /turmas`) ou atualizar informando um `professorId` (`PUT /turmas/{id}`), o serviço consulta `GET /professores/{id}` no Cadastro. Caso não exista, retorna `400 Bad Request`.
+3. **Consistência Temporal dos Horários:**
    - O `horarioFinal` deve ser estritamente posterior ao `horarioInicial`. Caso o usuário envie um horário final anterior ou igual ao inicial, a requisição é rejeitada com `400 Bad Request`.
-3. **Validação Estrita de Identificadores (404 Not Found):**
-   - Todas as operações direcionadas a um identificador específico (`GET /turma/{id}`, `PUT /turma/{id}` e `DELETE /turma/{id}`) passam pelo serviço centralizador `ValidaIdTurmaService`. Se o `id` não existir no banco de dados, é retornado imediatamente o código **`404 Not Found`** com mensagem em JSON.
-4. **Atualização Flexível no PUT:**
+4. **Validação Estrita de Identificadores (404 Not Found):**
+   - Todas as operações direcionadas a um identificador específico (`GET /turmas/{id}`, `GET /turmas/{id}/detalhes`, `PUT /turmas/{id}` e `DELETE /turmas/{id}`) passam pelo serviço centralizador `ValidaIdTurmaService`. Se o `id` não existir no banco de dados, é retornado imediatamente o código **`404 Not Found`** com mensagem em JSON.
+5. **Atualização Flexível no PUT:**
    - O endpoint de substituição permite alterar todos os dados ou atualizar campos específicos (preservando os valores existentes no banco para atributos omitidos no payload), garantindo usabilidade sem quebrar a consistência.
-5. **Tratamento Centralizado com `@RestControllerAdvice`:**
+6. **Consulta Composta sem Persistência Local:**
+   - Em `GET /turmas/{id}/detalhes`, os dados do professor (`professorNome` e `professorEmail`) são buscados no momento da requisição no serviço de Cadastro e não são gravados no banco local.
+7. **Tratamento Centralizado com `@RestControllerAdvice`:**
    - Todos os erros retornam no formato JSON padrão da aplicação com `timestamp`, `status`, `error`, `message` e `path`.
 
 ---
 
-## 4. Endpoints
+## 5. Endpoints
 
-Recurso base: **`/turma`**
+Recurso base: **`/turmas`**
 
-### 4.1. Listar Todas as Turmas (com Filtro Opcional por Query String)
+### 5.1. Listar Todas as Turmas (com Filtro Opcional por Query String)
 - **Método:** `GET`
-- **URL:** `/turma` ou `/turma/semestre?semestre=2026/2`
+- **URL:** `/turmas` ou `/turmas/semestre?semestre=2026/2` *(a paginação com `Pageable` e o filtro `?professorId=` serão documentados aqui)*
 - **Status:** `200 OK`
 - **Exemplo de Resposta (Status 200):**
 ```json
@@ -130,9 +186,9 @@ Recurso base: **`/turma`**
 
 ---
 
-### 4.2. Recuperar Turma por ID
+### 5.2. Recuperar Turma por ID
 - **Método:** `GET`
-- **URL:** `/turma/{id}`
+- **URL:** `/turmas/{id}`
 - **Status de Sucesso:** `200 OK`
 - **Status de Erro:** `404 Not Found` (quando o ID não existe)
 - **Exemplo de Resposta (Status 200):**
@@ -157,11 +213,40 @@ Recurso base: **`/turma`**
 
 ---
 
-### 4.3. Cadastrar Nova Turma
+### 5.3. Consulta Composta — Detalhes da Turma com Professor
+- **Método:** `GET`
+- **URL:** `/turmas/{id}/detalhes`
+- **Status de Sucesso:** `200 OK`
+- **Status de Erro:** `404 Not Found` (turma inexistente) ou `503 Service Unavailable` (serviço de Cadastro indisponível)
+- **Exemplo de Resposta (Status 200):**
+```json
+{
+  "id": 1,
+  "codigo": "DSC01",
+  "nomeDisciplina": "Desenvolvimento de Sistemas Computacionais",
+  "professorId": 1,
+  "semestre": "2026/2",
+  "sala": "Lab 03",
+  "diasSemana": [
+    "SEGUNDA",
+    "QUARTA"
+  ],
+  "horarioInicial": "19:00",
+  "horarioFinal": "22:15",
+  "cargaHoraria": 60,
+  "numeroVagas": 30,
+  "professorNome": "Manoella Jarces de Azevedo",
+  "professorEmail": "manoella@ifsul.edu.br"
+}
+```
+
+---
+
+### 5.4. Cadastrar Nova Turma
 - **Método:** `POST`
-- **URL:** `/turma`
+- **URL:** `/turmas`
 - **Status de Sucesso:** `201 Created`
-- **Status de Erro:** `400 Bad Request` (validação de campos obrigatórios ou regras de negócio)
+- **Status de Erro:** `400 Bad Request` (campos inválidos, código duplicado ou `professorId` inexistente no Cadastro) ou `503 Service Unavailable` (serviço de Cadastro indisponível)
 - **Exemplo de Requisição:**
 ```json
 {
@@ -202,11 +287,11 @@ Recurso base: **`/turma`**
 
 ---
 
-### 4.4. Atualizar Turma Existente
+### 5.5. Atualizar Turma Existente
 - **Método:** `PUT`
-- **URL:** `/turma/{id}`
+- **URL:** `/turmas/{id}`
 - **Status de Sucesso:** `200 OK`
-- **Status de Erro:** `404 Not Found` (ID inexistente) ou `400 Bad Request` (regras violadas)
+- **Status de Erro:** `404 Not Found` (ID inexistente), `400 Bad Request` (regras violadas ou `professorId` inexistente) ou `503 Service Unavailable` (serviço de Cadastro indisponível)
 - **Exemplo de Requisição (atualização de sala e vagas):**
 ```json
 {
@@ -236,15 +321,15 @@ Recurso base: **`/turma`**
 
 ---
 
-### 4.5. Remover Turma
+### 5.6. Remover Turma
 - **Método:** `DELETE`
-- **URL:** `/turma/{id}`
+- **URL:** `/turmas/{id}`
 - **Status de Sucesso:** `204 No Content` (corpo vazio)
 - **Status de Erro:** `404 Not Found` (ID inexistente)
 
 ---
 
-### 4.6. Exemplos de Respostas de Erro Centralizadas 
+### 5.7. Exemplos de Respostas de Erro Centralizadas 
 
 #### Erro 404 - Registro Não Encontrado:
 ```json
@@ -253,7 +338,7 @@ Recurso base: **`/turma`**
   "status": 404,
   "error": "Not Found",
   "message": "Id de turma inexistente",
-  "path": "/turma/999"
+  "path": "/turmas/999"
 }
 ```
 
@@ -264,7 +349,7 @@ Recurso base: **`/turma`**
   "status": 400,
   "error": "Bad Request",
   "message": "Campo codigo é obrigatório",
-  "path": "/turma"
+  "path": "/turmas"
 }
 ```
 
@@ -275,26 +360,19 @@ Recurso base: **`/turma`**
   "status": 400,
   "error": "Bad Request",
   "message": "Dia da semana 'DOMINGO' inválido. Valores aceitos: [SEGUNDA, TERCA, QUARTA, QUINTA, SEXTA]",
-  "path": "/turma"
+  "path": "/turmas"
 }
 ```
 
 ---
 
-## 5. Divisão de Atividades entre os Integrantes
+## 6. Divisão de Atividades entre os Integrantes
 
 As atividades foram distribuídas entre os dois integrantes:
 
 - **Nathan Doile:**
-  - Modelagem inicial da entidade de domínio `Turma` e enum `DiaSemana`.
-  - Implementação dos serviços de consulta: `BuscarTurmasService`, `BuscarTurmasPorSemestreService` e `BuscarTurmaPorIdService`.
-  - Criação do validador de existência de registros (`ValidaIdTurmaService`).
-  - Estruturação inicial do manipulador centralizado de exceções (`ApiExceptionHandler`).
-  - Elaboração da collection de requisições no Postman (`Meu Campus - Turmas.postman_collection.json`).
+  - **T1:** Modelagem inicial da entidade de domínio `Turma` e enum `DiaSemana`, serviços de consulta, `ValidaIdTurmaService`, `ApiExceptionHandler` inicial e collection no Postman.
 
 - **Jackson Gonçalves:**
-  - Definição e implementação dos DTOs de transferência: `TurmaRequestDTO`, `TurmaResponseDTO` e `AtualizarTurmaRequestDTO`.
-  - Configuração das anotações do Jackson (`@JsonFormat`, `@JsonProperty`, `@JsonCreator`) e validações de entrada (Bean Validation).
-  - Implementação dos serviços de mutação: `CadastrarTurmaService`, `AtualizarTurmaService` e `DeletarTurmaService`.
-  - Implementação das regras de unicidade de código, consistência de horários e atualização seletiva no `PUT`.
-  - Mapeamento JPA para persistência de coleções no banco de dados e elaboração da documentação técnica no `README.md`.
+  - **T1:** DTOs de entrada/saída, anotações Jackson, Bean Validation, serviços de mutação (`Cadastrar`, `Atualizar`, `Deletar`), regras de unicidade/horários/PUT parcial e documentação inicial.
+  - **T2:** Base comum (Springdoc OpenAPI, configuração de `RestClient` com timeouts no `application.yml`, padronização `/turmas`), cliente HTTP `CadastroClient` e `ProfessorDTO`, `ValidaProfessorService` (tradução 404 → 400), integração da validação no `POST` e `PUT`, consulta composta `GET /turmas/{id}/detalhes` (`TurmaDetalhesResponseDTO` e `BuscarDetalhesTurmaService`), carga inicial idempotente (`CargaInicial`), documentação Swagger nos endpoints de cadastro/atualização/detalhes e atualização do README (banco, entidade, Cadastro e consulta composta).
