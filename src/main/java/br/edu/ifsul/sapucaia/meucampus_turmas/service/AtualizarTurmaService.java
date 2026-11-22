@@ -5,6 +5,7 @@ import br.edu.ifsul.sapucaia.meucampus_turmas.dto.AtualizarTurmaRequestDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.dto.TurmaResponseDTO;
 import br.edu.ifsul.sapucaia.meucampus_turmas.repository.TurmaRepository;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaCodigoTurmaService;
+import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaConflitoHorarioTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaIdTurmaService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.service.validator.ValidaProfessorService;
 import br.edu.ifsul.sapucaia.meucampus_turmas.validation.ValidaHorariosTurmaValidator;
@@ -25,6 +26,7 @@ public class AtualizarTurmaService {
     private final ValidaCodigoTurmaService validaCodigoTurmaService;
     private final ValidaHorariosTurmaValidator validaHorariosTurma;
     private final ValidaProfessorService validaProfessorService;
+    private final ValidaConflitoHorarioTurmaService validaConflitoHorarioTurmaService;
 
     @Transactional
     public TurmaResponseDTO atualizar(Long id, AtualizarTurmaRequestDTO dto) {
@@ -34,6 +36,8 @@ public class AtualizarTurmaService {
         Turma turma = turmaRepository.findById(id).get();
 
         atualizaCamposInformados(dto, turma);
+
+        validaConflitoHorarioTurmaService.validarConflitoHorario(turma.getSala(), turma.getSemestre(), turma.getDiasSemana(), turma.getHorarioInicial(), turma.getHorarioFinal(), id);
 
         return toResponseDTO(turma);
     }
@@ -57,7 +61,7 @@ public class AtualizarTurmaService {
         }
 
         if (dto.getSala() != null && !dto.getSala().isBlank()) {
-            turma.setSala(dto.getSala().trim());
+            turma.setSala(dto.getSala().trim().toLowerCase());
         }
 
         if (dto.getDiasSemana() != null && !dto.getDiasSemana().isEmpty()) {
