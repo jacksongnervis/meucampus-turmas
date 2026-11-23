@@ -18,23 +18,17 @@ public class BuscarTurmasService {
     public Page<TurmaResponseDTO> buscar(Long professorId, String semestre, Pageable pageable) {
 
         Page<Turma> response;
+        boolean temSemestre = semestre != null && !semestre.isBlank();
 
-        if (professorId != null){
-
-            if(semestre != null && !semestre.isEmpty()){
-                response = turmaRepository.findAllByProfessorIdAndSemestre(professorId, semestre, pageable);
-            }
-
-            else{
+        if (professorId != null) {
+            if (temSemestre) {
+                response = turmaRepository.findAllByProfessorIdAndSemestre(professorId, semestre.trim(), pageable);
+            } else {
                 response = turmaRepository.findAllByProfessorId(professorId, pageable);
             }
-        }
-
-        else if(semestre != null && !semestre.isEmpty()){
-            response = turmaRepository.findAllBySemestre(semestre, pageable);
-        }
-
-        else{
+        } else if (temSemestre) {
+            response = turmaRepository.findAllBySemestre(semestre.trim(), pageable);
+        } else {
             response = turmaRepository.findAll(pageable);
         }
 

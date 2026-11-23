@@ -1,14 +1,12 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.repository;
 
 import br.edu.ifsul.sapucaia.meucampus_turmas.domain.Turma;
-import br.edu.ifsul.sapucaia.meucampus_turmas.domain.enums.DiaSemana;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 
 import java.time.LocalTime;
-import java.util.List;
 
 public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
@@ -19,7 +17,7 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
     @NativeQuery("""
             SELECT EXISTS (
              SELECT 1 FROM turma t
-             WHERE t.sala = :sala
+             WHERE LOWER(t.sala) = :sala
                AND t.semestre = :semestre
                AND t.dias_semana && CAST(:diasSemana AS smallint[])
                AND t.horario_inicial < :horarioFinal

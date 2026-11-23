@@ -1,7 +1,6 @@
 package br.edu.ifsul.sapucaia.meucampus_turmas.config;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -57,8 +56,8 @@ public class ApiExceptionHandler {
                 "Parâmetro '" + ex.getName() + "' com valor inválido: " + ex.getValue(), request);
     }
 
-    @ExceptionHandler({PropertyReferenceException.class, InvalidDataAccessApiUsageException.class})
-    public ResponseEntity<Map<String, Object>> handleSortInvalido(RuntimeException ex,
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<Map<String, Object>> handleSortInvalido(PropertyReferenceException ex,
                                                                   HttpServletRequest request) {
         return montarErro(BAD_REQUEST, "Parâmetro de ordenação inválido.", request);
     }

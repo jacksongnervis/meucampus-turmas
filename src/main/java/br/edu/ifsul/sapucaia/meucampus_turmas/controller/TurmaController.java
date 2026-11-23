@@ -136,6 +136,7 @@ public class TurmaController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Detalhes da turma encontrados"),
+            @ApiResponse(responseCode = "400", description = "Id com formato inválido", content = @Content),
             @ApiResponse(responseCode = "404", description = "Turma não encontrada", content = @Content),
             @ApiResponse(responseCode = "503", description = "Serviço de Cadastro indisponível ou tempo limite excedido", content = @Content)
     })

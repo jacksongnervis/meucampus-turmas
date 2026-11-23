@@ -12,8 +12,8 @@ public class TurmaMapper {
         }
 
         return Turma.builder()
-                .codigo(dto.getCodigo())
-                .nomeDisciplina(dto.getNomeDisciplina())
+                .codigo(dto.getCodigo().trim())
+                .nomeDisciplina(dto.getNomeDisciplina().trim())
                 .professorId(dto.getProfessorId())
                 .semestre(dto.getSemestre().trim())
                 .sala(dto.getSala().trim().toLowerCase())

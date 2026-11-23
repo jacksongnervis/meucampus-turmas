@@ -28,15 +28,21 @@ public class CadastrarTurmaService {
     @Transactional
     public TurmaResponseDTO cadastrar(TurmaRequestDTO dto) {
 
-        validaProfessorService.validar(dto.getProfessorId());
-
         validaCodigoTurmaService.validaSeExiste(dto.getCodigo().trim());
 
         validaHorarioTurmaService.validarHorarioFinalPosteriorHorarioInicial(dto.getHorarioInicial(), dto.getHorarioFinal());
 
         Long idIgnorado = 0L;
 
-        validaConflitoHorarioTurmaService.validarConflitoHorario(dto.getSala().trim().toLowerCase(), dto.getSemestre(), dto.getDiasSemana(), dto.getHorarioInicial(), dto.getHorarioFinal(), idIgnorado);
+        validaConflitoHorarioTurmaService.validarConflitoHorario(
+                dto.getSala().trim().toLowerCase(),
+                dto.getSemestre().trim(),
+                dto.getDiasSemana(),
+                dto.getHorarioInicial(),
+                dto.getHorarioFinal(),
+                idIgnorado);
+
+        validaProfessorService.validar(dto.getProfessorId());
 
         Turma turma = toEntity(dto);
         Turma salva = turmaRepository.save(turma);

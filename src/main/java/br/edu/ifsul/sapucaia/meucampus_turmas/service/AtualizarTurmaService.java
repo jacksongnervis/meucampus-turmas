@@ -37,7 +37,13 @@ public class AtualizarTurmaService {
 
         atualizaCamposInformados(dto, turma);
 
-        validaConflitoHorarioTurmaService.validarConflitoHorario(turma.getSala(), turma.getSemestre(), turma.getDiasSemana(), turma.getHorarioInicial(), turma.getHorarioFinal(), id);
+        validaConflitoHorarioTurmaService.validarConflitoHorario(
+                turma.getSala().toLowerCase(),
+                turma.getSemestre(),
+                turma.getDiasSemana(),
+                turma.getHorarioInicial(),
+                turma.getHorarioFinal(),
+                id);
 
         return toResponseDTO(turma);
     }
